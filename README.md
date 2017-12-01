@@ -68,8 +68,10 @@ Use this tag to run only the tomcat configuration or skip it.
   gather_facts: true
 
   vars:
+    # Define tomcat_home and tomcat_owner
     tomcat_home: <tomcat_home>
     tomcat_owner: <tomcat_owner>
+    # Turn off Tomcat configuration (only installs Contrast)
     configure_tomcat: false
 
   roles:
@@ -127,12 +129,13 @@ JAVA_OPTS="${JAVA_OPTS} -DappEnv=cloud -DappEnvImage=CodingCloud"
 
 # <<contrast-config-position>> DO NOT DELETE THIS LINE
 # BEGIN ANSIBLE MANAGED BLOCK FOR Contrast ==========================
+# Contrast.env only recognizes 3 values: Development, QA and Production
 # Contrast
 export JAVA_OPTS="$JAVA_OPTS -XX:+PrintVMOptions"
 export JAVA_OPTS="$JAVA_OPTS -XX:+PrintCommandLineFlags"
 export JAVA_OPTS="$JAVA_OPTS -javaagent:/opt/contrast/sdev/contrast.jar"
 export JAVA_OPTS="$JAVA_OPTS -Dcontrast.enabled=true"
-export JAVA_OPTS="$JAVA_OPTS -Dcontrast.env=sdev"
+export JAVA_OPTS="$JAVA_OPTS -Dcontrast.env=Development"
 export JAVA_OPTS="$JAVA_OPTS -Dcontrast.server=SDEV-10.90.24.81"
 export JAVA_OPTS="$JAVA_OPTS -Dcontrast.dir=/opt/contrast/sdev/logs"
 # END ANSIBLE MANAGED BLOCK FOR Contrast ==========================
