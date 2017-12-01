@@ -1,0 +1,29 @@
+---
+# file: site.yml
+#
+# Consult contrast-tomcat/defaults/main.yml for a list of variables you can change
+#
+# Usage:
+# ansible-playbook -i hosts -e <env> site.yml
+# env is one of: dev | devOnPerf | ausdev1 | qa | perf | opuat | usuat | hdi | rnd | cprod
+# 
+# Example:
+# ansible-playbook -i hosts -e dev site.yml
+#
+
+- name: Install Contrast and configure Tomcat
+  hosts: all
+  become_user: root
+  become_method: sudo
+  become: true
+  gather_facts: true
+
+  vars:
+    # Define tomcat_home and tomcat_owner
+    tomcat_home: <tomcat_home>
+    tomcat_owner: <tomcat_owner>
+    # Turn off Tomcat configuration (only installs Contrast)
+    configure_tomcat: false
+
+  roles:
+    - { role: contrast-tomcat, tags: ['contrast'] }

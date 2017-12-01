@@ -1,0 +1,16 @@
+---
+
+# Installation directory for Contrast
+contrast_home: /opt/contrast
+
+# This flag controls whether or not we modify the setenv.sh file
+# with the contrast parameters
+configure_tomcat: true
+
+# When this flag is true, then the JAVA_OPTS -Dcontrast.enabled flag is set to true
+# Most environments have this flag disabled
+contrast_enabled: false
+
+# Tomcat home
+tomcat_home:
+tomcat_owner:

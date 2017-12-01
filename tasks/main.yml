@@ -1,0 +1,51 @@
+---
+
+- name: env must be set
+  assert:
+    that:
+      - "env is defined" 
+      - "env|trim != ''" 
+
+- name: Create Installation directory
+  file: path="{{ contrast_home }}/{{ env }}" state=directory mode=0755 owner=root group=root
+
+- name: Create log directory
+  file: path="{{ contrast_home }}/{{ env }}/logs" state=directory mode=0777 owner=root group=root
+
+- name: Copy jar file
+  copy: src=contrast.jar dest={{ contrast_home }}/{{ env }}
+  
+- name: Check if {{ tomcat_home }}/bin/setenv.sh exists
+  stat: path="{{ tomcat_home }}/bin/setenv.sh" follow=true
+  become_user: "{{ tomcat_owner }}"
+  register: setenv_stat
+  tags: config-tomcat
+
+- debug: msg="{{ tomcat_home }}/bin/setenv.sh does not exist"
+  when: setenv_stat.stat.exists == false
+  tags: config-tomcat
+
+- name: Check permissions of setenv.sh
+  file: path="{{ tomcat_home }}/bin/setenv.sh" mode=0750
+  when: setenv_stat.stat.exists == true
+  tags: config-tomcat
+
+- name: add JAVA_OPTS lines for contrast in setenv.sh
+  blockinfile:
+    dest: "{{ tomcat_home }}/bin/setenv.sh"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK FOR Contrast =========================="
+    insertafter: "# <<contrast-config-position>>.*"
+    block: |
+      # contrast
+      export JAVA_OPTS="$JAVA_OPTS -XX:+PrintVMOptions"
+      export JAVA_OPTS="$JAVA_OPTS -XX:+PrintCommandLineFlags"
+      export JAVA_OPTS="$JAVA_OPTS -javaagent:{{ contrast_home }}/{{ env }}/contrast.jar"
+      export JAVA_OPTS="$JAVA_OPTS -Dcontrast.enabled={{ contrast_enabled }}"
+      export JAVA_OPTS="$JAVA_OPTS -Dcontrast.env={{ env }}"
+      export JAVA_OPTS="$JAVA_OPTS -Dcontrast.server={{ env|upper }}-{{ ansible_host }}"
+      export JAVA_OPTS="$JAVA_OPTS -Dcontrast.dir={{ contrast_home }}/{{ env }}/logs"
+  when: ( setenv_stat.stat.exists == true and configure_tomcat == true)
+  become_user: "{{ tomcat_owner }}"
+  tags: config-tomcat
+
+# EOF
