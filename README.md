@@ -148,6 +148,3 @@ JAVA_OPTS="$JAVA_OPTS -javaagent:/home/ndxis/tc/newrelic/newrelic.jar"
 
 The Tomcat configuration will be executed if the file {{ tomcat_home }}/bin/setenv.sh exists
 
-## Author
-  <kai.poitschke@ourcompany>>
-
